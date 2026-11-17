@@ -2,6 +2,7 @@ name: Bug
 description: Something in the code does not work as expected
 title: "[Bug] "
 labels: ["bug"]
+type: Bug
 projects: ["AndersonGACFilho/18"]
 body:
   - type: textarea

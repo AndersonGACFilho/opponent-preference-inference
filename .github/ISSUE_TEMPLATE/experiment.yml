@@ -2,6 +2,7 @@ name: Experiment
 description: An experiment run or agent training
 title: "[Exp] "
 labels: ["experiment"]
+type: Experiment
 projects: ["AndersonGACFilho/18"]
 body:
   - type: dropdown

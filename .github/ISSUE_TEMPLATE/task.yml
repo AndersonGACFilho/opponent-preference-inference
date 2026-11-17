@@ -2,6 +2,7 @@ name: Task
 description: A task from the short paper schedule
 title: "[P?] "
 labels: ["task"]
+type: Task
 projects: ["AndersonGACFilho/18"]
 body:
   - type: dropdown
