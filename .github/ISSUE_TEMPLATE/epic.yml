@@ -1,0 +1,42 @@
+name: Epic
+description: Parent issue that groups related tasks as sub-issues
+title: "[Epic] "
+labels: ["epic"]
+type: Epic
+projects: ["AndersonGACFilho/18"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What this epic delivers.
+    validations:
+      required: true
+  - type: dropdown
+    id: lead
+    attributes:
+      label: Lead
+      options:
+        - P1
+        - P2
+        - P3
+        - P4
+    validations:
+      required: true
+  - type: checkboxes
+    id: team
+    attributes:
+      label: Team
+      options:
+        - label: P1
+        - label: P2
+        - label: P3
+        - label: P4
+  - type: input
+    id: timeline
+    attributes:
+      label: Timeline
+      placeholder: "11/23 → 11/26"
+  - type: markdown
+    attributes:
+      value: After creating the epic, add its tasks as sub-issues and add the label of every team member.
