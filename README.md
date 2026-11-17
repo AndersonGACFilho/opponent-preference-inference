@@ -3,6 +3,8 @@
 Inferring opponent preferences in multi-objective board games: going beyond action prediction to model the trade-offs and objective weights that drive opponent behavior.
 
 > **Status:** short paper with preliminary results, due **11/30/2026**, to be expanded later into a full paper.
+>
+> **Paper (Overleaf):** _link to be added_ ([#34](https://github.com/AndersonGACFilho/opponent-preference-inference/issues/34))
 
 ## Overview
 
