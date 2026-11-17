@@ -1,0 +1,58 @@
+name: Task
+description: A task from the short paper schedule
+title: "[P?] "
+labels: ["task"]
+projects: ["AndersonGACFilho/18"]
+body:
+  - type: dropdown
+    id: owner
+    attributes:
+      label: Owner
+      options:
+        - P1 (solver and evaluation)
+        - P2 (environment and MO-PPO)
+        - P3 (oracle and literature)
+        - P4 (ω̂ inference and coordination)
+        - Everyone
+    validations:
+      required: true
+  - type: input
+    id: due
+    attributes:
+      label: Due
+      placeholder: "Wed 11/18"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Solver
+        - Environment
+        - Agent
+        - Experiment
+        - Writing
+        - Coordination
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What needs to be done.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: Objective completion criterion.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: 'Issues or deliverables this task depends on, for example "depends on #4".'
+      placeholder: None

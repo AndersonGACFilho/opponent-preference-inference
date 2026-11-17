@@ -1,0 +1,45 @@
+name: Experiment
+description: An experiment run or agent training
+title: "[Exp] "
+labels: ["experiment"]
+projects: ["AndersonGACFilho/18"]
+body:
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - MO-PPO (baseline)
+        - ω̂ (proposed)
+        - Oracle
+        - Exact solver
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: Board, objectives, own ω, opponent ω (train/test), temperature, hyperparameters.
+      value: |
+        - Board: 4×4
+        - Objectives: win, win fast, column control
+        - Opponent ω:
+        - Opponent temperature:
+        - Hyperparameters:
+    validations:
+      required: true
+  - type: input
+    id: seeds
+    attributes:
+      label: Seeds
+      value: "5"
+  - type: textarea
+    id: command
+    attributes:
+      label: Command to reproduce
+      render: shell
+  - type: textarea
+    id: results
+    attributes:
+      label: Results
+      description: Utility, regret against the exact best response, win rate, |ω̂ − ω| error (95% CI). Can be filled in later.

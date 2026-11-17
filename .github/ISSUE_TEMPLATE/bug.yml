@@ -1,0 +1,28 @@
+name: Bug
+description: Something in the code does not work as expected
+title: "[Bug] "
+labels: ["bug"]
+projects: ["AndersonGACFilho/18"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What was expected
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      render: shell
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Does it affect results already generated? Does it block anyone?
