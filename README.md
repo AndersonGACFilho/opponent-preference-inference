@@ -90,7 +90,7 @@ Work is tracked in the [GitHub Project](https://github.com/users/AndersonGACFilh
 | **P1** (Filipe Moura) | Exact solver, policy and best-response tables, results, figures | Results |
 | **P2** | MOMAland consistency test, Gym environment, MO-PPO | Methodology and setup |
 | **P3** | Obiang's thesis, oracle agent | Related work |
-| **P4** | Professor validation, ω̂ agent, coordination, submission | Introduction, discussion, conclusion, abstract |
+| **P4** (Anderson Gonçalves) | Professor validation, ω̂ agent, coordination, submission | Introduction, discussion, conclusion, abstract |
 
 ### Conventions
 

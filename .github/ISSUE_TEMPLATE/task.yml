@@ -13,7 +13,7 @@ body:
         - P1 Filipe Moura (solver and evaluation)
         - P2 (environment and MO-PPO)
         - P3 (oracle and literature)
-        - P4 (ω̂ inference and coordination)
+        - P4 Anderson Gonçalves (ω̂ inference and coordination)
         - Everyone
     validations:
       required: true
