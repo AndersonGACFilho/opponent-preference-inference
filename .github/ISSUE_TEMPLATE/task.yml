@@ -10,7 +10,7 @@ body:
     attributes:
       label: Owner
       options:
-        - P1 (solver and evaluation)
+        - P1 Filipe Moura (solver and evaluation)
         - P2 (environment and MO-PPO)
         - P3 (oracle and literature)
         - P4 (ω̂ inference and coordination)
