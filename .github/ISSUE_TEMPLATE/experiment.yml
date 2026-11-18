@@ -5,6 +5,13 @@ labels: ["experiment"]
 type: Experiment
 projects: ["AndersonGACFilho/18"]
 body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: Which hypothesis or question this run answers.
+    validations:
+      required: true
   - type: dropdown
     id: agent
     attributes:
@@ -39,6 +46,23 @@ body:
     attributes:
       label: Command to reproduce
       render: shell
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] **AC1:** Every own ω × test opponent ω combination has results for all seeds
+        - [ ] **AC2:** Regret is computed against the exact best response
+    validations:
+      required: true
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of done
+      value: |
+        - [ ] Configs and the exact command recorded in this issue
+        - [ ] Raw results (CSV per seed) committed under `results/` or linked
+        - [ ] Summary posted: mean ± std and 95% CI over 5 seeds
   - type: textarea
     id: results
     attributes:
