@@ -1,5 +1,5 @@
 name: Task
-description: A task from the short paper schedule
+description: A task from the final project schedule (objective, user story, scope, acceptance criteria)
 title: "[P?] "
 labels: ["task"]
 type: Task
@@ -38,22 +38,64 @@ body:
     validations:
       required: true
   - type: textarea
-    id: description
+    id: objective
     attributes:
-      label: Description
-      description: What needs to be done.
+      label: Objective
+      description: One sentence on the outcome this task delivers.
     validations:
       required: true
   - type: textarea
-    id: done
+    id: story
     attributes:
-      label: Done when
-      description: Objective completion criterion.
+      label: User story
+      value: "As <role>, I want <capability> so that <benefit>."
     validations:
       required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why this task exists, and links to papers, feedback or related issues.
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      value: |
+        **In scope**
+        -
+
+        **Out of scope**
+        -
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Objective, testable conditions. Prefer "Given … when … then …".
+      value: |
+        - [ ] **AC1:** Given …, when …, then …
+        - [ ] **AC2:**
+    validations:
+      required: true
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of done
+      value: |
+        - [ ] Code or outcome merged / recorded (PR reviewed, or result posted in this issue)
+        - [ ] Tests or sanity checks pass
+        - [ ] README or paper updated where relevant
+        - [ ] All acceptance criteria checked
+  - type: textarea
+    id: notes
+    attributes:
+      label: Technical notes
   - type: textarea
     id: dependencies
     attributes:
       label: Dependencies
-      description: 'Issues or deliverables this task depends on, for example "depends on #4".'
-      placeholder: None
+      description: Also add them as "blocked by" relationships in the issue sidebar.
+      value: |
+        - **Blocked by:** None
+        - **Blocks:** None

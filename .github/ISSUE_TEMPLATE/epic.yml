@@ -5,13 +5,6 @@ labels: ["epic"]
 type: Epic
 projects: ["AndersonGACFilho/18"]
 body:
-  - type: textarea
-    id: goal
-    attributes:
-      label: Goal
-      description: What this epic delivers.
-    validations:
-      required: true
   - type: dropdown
     id: lead
     attributes:
@@ -37,6 +30,36 @@ body:
     attributes:
       label: Timeline
       placeholder: "11/23 → 11/26"
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What this epic delivers.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it matters
+    validations:
+      required: true
+  - type: textarea
+    id: success
+    attributes:
+      label: Success criteria
+      value: |
+        - [ ]
+        - [ ] All sub-issues closed
+    validations:
+      required: true
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of scope
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks
   - type: markdown
     attributes:
-      value: After creating the epic, add its tasks as sub-issues and add the label of every team member.
+      value: After creating the epic, add its tasks as sub-issues, link "blocked by" relationships and add the label of every team member.
