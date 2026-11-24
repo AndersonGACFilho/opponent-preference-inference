@@ -221,3 +221,29 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---- Projeto opponent-inference ----
+
+# Documentos locais (PDFs da proposta e do planejamento, Overleaf exportado, etc.)
+*.pdf
+
+# Saídas de experimentos: só .gitkeep é versionado
+results/*
+!results/.gitkeep
+runs/
+logs/
+wandb/
+tensorboard/
+events.out.tfevents.*
+
+# Checkpoints de modelos
+*.pt
+*.pth
+*.ckpt
+
+# Arrays NumPy: versionados só em data/ (tabelas do solver)
+*.npz
+!data/*.npz
+
+# Ferramentas
+.ruff_cache/

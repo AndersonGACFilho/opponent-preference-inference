@@ -106,6 +106,29 @@ Work is tracked in the [GitHub Project](https://github.com/users/AndersonGACFilh
 - **ω̂ is not informative:** report it as a negative result, with the error-per-move curve.
 - **The framing is not approved:** the solver and environment serve any variant; only the hypotheses change.
 
+## Development
+
+Requires [uv](https://docs.astral.sh/uv/). Dependencies are pinned in `uv.lock`.
+
+```bash
+uv sync                  # cria .venv e instala as dependências
+uv run pytest            # testes
+uv run ruff check .      # lint
+uv run python -m opponent_inference.solver   # demo do solver
+```
+
+Layout:
+
+```
+src/opponent_inference/   pacote (solver; ambiente, agentes e inferência entram aqui)
+data/                     tabelas versionadas (q_tables_4x4.npz)
+scripts/                  geração de tabelas e experimentos
+tests/                    pytest
+results/                  saídas de experimentos (ignoradas pelo git)
+```
+
+Workflow: uma branch por issue a partir de `main`, PR para `main`.
+
 ## References
 
 - Obiang & Rădulescu (2026). *Opponent Modelling for MOMARL in Sequential Settings.* MODeM @ IJCAI-ECAI 2026.
