@@ -19,16 +19,16 @@ não ser o único. Declarar essa regra na metodologia.
 
 Uso
 ---
-    from c4_spe import solve_spe
+    from opponent_inference.solver import solve_spe
     resultado = solve_spe(w_x=(1, 0, 0), w_o=(0.2, 0, 0.8), width=4, height=4)
     resultado.root_outcome          # vetor (vitória, rapidez, colunas) para X, na raiz
     resultado.values[tabuleiro]     # vetor de resultado de qualquer posição não terminal
     resultado.best_move[tabuleiro]  # coluna escolhida por quem joga naquela posição
 
 Tabelas dos oponentes (decisão de 18/11: o oponente supõe que o agente tem o mesmo ω):
-    from c4_spe import build_q_tables, load_q_tables
-    build_q_tables("q_tables_4x4.npz")          # 15 ω da grade (passo 0,25), ~2 min
-    tabelas = load_q_tables("q_tables_4x4.npz")
+    from opponent_inference.solver import build_q_tables, load_q_tables
+    build_q_tables("data/q_tables_4x4.npz")     # 15 ω da grade (passo 0,25), ~2 min
+    tabelas = load_q_tables("data/q_tables_4x4.npz")
     tabelas.q_values(tabuleiro, k)               # utilidade de cada coluna para quem joga
     tabelas.action_probs(tabuleiro, k, tau=0.1)  # política softmax do oponente k
 """
@@ -60,7 +60,9 @@ def as_weights(w: Sequence[float], tol: float = 1e-9) -> Weights:
     """
     values = tuple(float(v) for v in w)
     if len(values) != N_OBJECTIVES:
-        raise ValueError(f"ω precisa de {N_OBJECTIVES} componentes, recebeu {len(values)}: {values}")
+        raise ValueError(
+            f"ω precisa de {N_OBJECTIVES} componentes, recebeu {len(values)}: {values}"
+        )
     if any(v < -tol for v in values):
         raise ValueError(f"ω não pode ter componentes negativos: {values}")
     if abs(sum(values) - 1.0) > 1e-6:
@@ -245,7 +247,7 @@ def q_values_from_solution(res: SolveResult, board: Board) -> np.ndarray:
 
 
 def build_q_tables(
-    path: str | Path = "q_tables_4x4.npz",
+    path: str | Path = "data/q_tables_4x4.npz",
     weights_grid: Optional[Sequence[Sequence[float]]] = None,
     width: int = 4,
     height: int = 4,
