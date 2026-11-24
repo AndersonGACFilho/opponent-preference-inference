@@ -1,7 +1,7 @@
 [project]
 name = "opponent-inference"
 version = "0.1.0"
-description = "Inferência de preferências do oponente em MO-Connect4 (short paper)"
+description = "Opponent preference inference in multi-objective Connect4 (short paper)"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.12"

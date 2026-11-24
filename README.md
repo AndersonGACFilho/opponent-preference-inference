@@ -111,23 +111,25 @@ Work is tracked in the [GitHub Project](https://github.com/users/AndersonGACFilh
 Requires [uv](https://docs.astral.sh/uv/). Dependencies are pinned in `uv.lock`.
 
 ```bash
-uv sync                  # cria .venv e instala as dependências
-uv run pytest            # testes
+uv sync                  # create .venv and install dependencies
+uv run pytest            # tests
 uv run ruff check .      # lint
-uv run python -m opponent_inference.solver   # demo do solver
+uv run python -m opponent_inference.solver   # solver demo
 ```
 
 Layout:
 
 ```
-src/opponent_inference/   pacote (solver; ambiente, agentes e inferência entram aqui)
-data/                     tabelas versionadas (q_tables_4x4.npz)
-scripts/                  geração de tabelas e experimentos
+src/opponent_inference/   package (solver; environment, agents and inference go here)
+data/                     versioned tables (q_tables_4x4.npz)
+scripts/                  table generation and experiments
 tests/                    pytest
-results/                  saídas de experimentos (ignoradas pelo git)
+results/                  experiment outputs (ignored by git)
+STATE.md                  current status, recent work and next steps
+TECH_DEBT.md              everything still pending
 ```
 
-Workflow: uma branch por issue a partir de `main`, PR para `main`.
+Workflow: one branch per issue from `main`, PR into `main`. Everything in this project (code, docs, commits, PRs) is written in English.
 
 ## References
 
