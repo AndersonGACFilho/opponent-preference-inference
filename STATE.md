@@ -26,7 +26,9 @@ Test opponents `[9, 10, 11]`, all 15 own omegas, both sides, 5 training seeds. R
 | MO-PPO | +0.147 +- 0.013 | 0.366 +- 0.043 | 0.556 | 0.079 |
 | Random (1 seed) | -0.134 | 0.098 | 0.462 | 0.440 |
 
-Files (git-ignored): `results/mo_ppo/seed<N>/{policy.pt,train_log.csv}`, `results/mo_ppo/eval_test.csv`. Regenerate with the commands below.
+Files (git-ignored): `results/mo_ppo/seed<N>/{policy.pt,train_log.csv}`, `results/mo_ppo/eval_test.csv`. Regenerate with the commands in the README ("Running experiments").
+
+Caveat: raw test utility (+0.147) vs train utility (+0.087) cannot be compared because the opponent sets differ in difficulty. Gain over the random agent is similar on both (+0.281 test, +0.267 train: random scores -0.134 and -0.180), so no sign of a generalization drop, but only regret against the exact best response (TD-01) settles it. Full reading of the results in `docs/mo_ppo_baseline.md`.
 
 ## Handoff interface for P3 (oracle) and P4 (omega-hat agent)
 
