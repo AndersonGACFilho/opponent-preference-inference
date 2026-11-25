@@ -111,23 +111,59 @@ Work is tracked in the [GitHub Project](https://github.com/users/AndersonGACFilh
 Requires [uv](https://docs.astral.sh/uv/). Dependencies are pinned in `uv.lock`.
 
 ```bash
-uv sync                  # cria .venv e instala as dependências
-uv run pytest            # testes
+uv sync                  # create .venv and install dependencies
+uv run pytest            # tests
 uv run ruff check .      # lint
-uv run python -m opponent_inference.solver   # demo do solver
+uv run python -m opponent_inference.solver   # solver demo
 ```
+
+### Running experiments
+
+All commands run from the repository root. Outputs go to `results/` (ignored by git).
+
+```bash
+# 1. Tests, including the MOMAland consistency test (needs the optional group)
+uv sync --group consistency
+uv run pytest
+uv run ruff check .
+
+# 2. Train the MO-PPO baseline: 5 seeds in parallel, ~10 min each on CPU
+#    (writes results/mo_ppo/seed<N>/policy.pt and train_log.csv)
+for s in 0 1 2 3 4; do uv run python scripts/train_mo_ppo.py --seed $s --total-steps 2000000 & done; wait
+
+# 3. Evaluate on the held-out test opponents and compare with a random agent
+#    (15 own omegas x test opponents x 2 sides x 100 games per seed)
+uv run python scripts/evaluate_agent.py \
+    --checkpoints results/mo_ppo/seed*/policy.pt --random --opponents test \
+    --out results/mo_ppo/eval_test.csv
+
+# 4. Evaluate on the train opponents, with the random reference in the same set
+uv run python scripts/evaluate_agent.py \
+    --checkpoints results/mo_ppo/seed*/policy.pt --random --opponents train \
+    --out results/mo_ppo/eval_train.csv
+
+# 5. Inspect the learning curve of one seed (every 400th update; entropy is the last column)
+cut -d, -f1-4,8 results/mo_ppo/seed0/train_log.csv | awk 'NR==1 || NR%400==0' | column -s, -t
+```
+
+`evaluate_agent.py` options: `--opponents {train,test,all}`, `--games N` (per cell), `--tau T`
+(opponent softmax temperature), `--out FILE`. The summary prints the mean and the 95% CI across
+seeds for utility, win, draw and loss rates. How to read the numbers, and what they do not show,
+is in [`docs/mo_ppo_baseline.md`](docs/mo_ppo_baseline.md).
 
 Layout:
 
 ```
-src/opponent_inference/   pacote (solver; ambiente, agentes e inferência entram aqui)
-data/                     tabelas versionadas (q_tables_4x4.npz)
-scripts/                  geração de tabelas e experimentos
+src/opponent_inference/   package (solver; environment, agents and inference go here)
+data/                     versioned tables (q_tables_4x4.npz)
+scripts/                  table generation and experiments
 tests/                    pytest
-results/                  saídas de experimentos (ignoradas pelo git)
+results/                  experiment outputs (ignored by git)
+STATE.md                  current status, recent work and next steps
+TECH_DEBT.md              everything still pending
 ```
 
-Workflow: uma branch por issue a partir de `main`, PR para `main`.
+Workflow: one branch per issue from `main`, PR into `main`. Everything in this project (code, docs, commits, PRs) is written in English.
 
 ## References
 
