@@ -24,6 +24,9 @@ Priority: **H** = blocks the short paper (due 2026-11-30), **M** = should be don
 | TD-12 | Tooling | any | L | Ruff only checks `E`, `F`, `I`. Enabling `UP` requires modernizing `solver.py` (`Dict` -> `dict`, `lru_cache` -> `cache`). |
 | TD-13 | Tooling | any | L | `torch` pulls the CUDA wheels (large `.venv`). Training uses CPU only; consider a CPU-only torch index. |
 | TD-14 | Extended version | all | L | MO-PPO-OM baseline, self-play with learning opponents, 5x4 board, MO-Breakthrough, D3PO, non-linear utilities. |
+| TD-15 | Agents | P2 | M | MO-PPO keeps the paper's lr 0.01, which collapses policy entropy within ~40k steps. A single-seed diagnostic with lr 0.003 gave comparable test utility (+0.089 vs +0.105), so it was not changed; revisit if oracle/omega-hat agents behave differently. |
+| TD-16 | Evaluation | P2 / P1 | M | `evaluate_policy` plays the greedy (argmax) policy, 100 games per (own omega, opponent, side) cell, own omegas only on the 15-point grid. Decide whether the paper needs stochastic evaluation or off-grid omegas. |
+| TD-17 | Environment | P2 | L | `ConnectFourOpponentEnv` is hard-wired to the opponent assumption "same omega as the agent" through the Q tables; opponents that model the agent's true omega would need new tables. |
 
 ## Resolved
 
