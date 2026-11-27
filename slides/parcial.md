@@ -164,20 +164,6 @@ Nenhuma dessas diferenças sai do intervalo de confiança de 95% sobre os 5 seed
 
 ---
 
-## Por que o filtro não ajuda: teste de identificação (fase 0)
-
-Para saber se o problema estava nos lances, medimos o filtro sozinho. 
-
-Um agente aleatório jogou 100 partidas contra cada um dos 15 oponentes, e registramos quanta probabilidade o filtro dava ao grupo verdadeiro depois de cada lance. 
-
-Em média, essa probabilidade vai de 0,10 após o primeiro lance para 0,16 após o oitavo: o filtro aprende, mas muito devagar.
-
-O critério de aprovação era chegar a 0,9, mas nenhum oponente chega perto: após oito lances, a probabilidade fica entre 0,08 e 0,28, e nenhuma partida passa do limiar com τ = 0,1. Em um tabuleiro 4×4, portanto, os lances do oponente não revelam a sua preferência, e trocar τ não muda isso.
-
-Isso explica o resultado do slide anterior. A crença que chega à política traz pouca informação, então o agente ω̂ se comporta quase como o MO-PPO.
-
----
-
 ## Limitações
 
 A limitação mais importante é que, no teste, o filtro conhece apenas os oponentes de treino. 
