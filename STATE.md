@@ -1,11 +1,11 @@
 # Project state
 
-Last updated: 2026-11-24. Short paper due **2026-11-30**. See `TECH_DEBT.md` for everything pending.
+Last updated: 2026-11-26. Short paper due **2026-11-30**. See `TECH_DEBT.md` for everything pending.
 
 ## Branch / PR status
 
 - `main`: includes the structured package (PR #39 merged).
-- Working branch: `2-p2-environment-and-baseline` (P2 deliverables). All code is committed; the PR is not opened yet.
+- Working branch: `moma-inference-agent-against-fixed-oponent` (omega-hat agent). Committed in 2b8adf3: inference filter, belief training script, phase 0 check, design doc. Uncommitted at the time of writing: evaluation wiring for the belief agent (`env_wrapper` in `evaluate.py`, belief branch in `scripts/evaluate_agent.py`), its tests, and ruff fixes in `tests/test_inference.py`.
 
 ## Done
 
@@ -16,6 +16,7 @@ Last updated: 2026-11-24. Short paper due **2026-11-30**. See `TECH_DEBT.md` for
 - **Train/test split** (`splits.py`): groups omegas by identical behaviour (12 groups, confirmed), splits whole groups. Default seed 0 gives train `[0..8, 12, 13, 14]`, test `[9, 10, 11]` = omegas (0.25,0,0.75), (0,1,0), (0,0.75,0.25). Proposal, to be confirmed (TD-03).
 - **MO-PPO baseline** (`agents/policy.py`, `agents/ppo.py`, `scripts/train_mo_ppo.py`): paper hyperparameters; trained 5 seeds x 2M steps (about 10 min each, CPU).
 - **Evaluation harness** (`evaluate.py`, `scripts/evaluate_agent.py`): per-cell CSV and summary with 95% CI over seeds.
+- **Omega-hat agent, first version** (`inference.py`, `scripts/train_belief_agent.py`): Bayesian filter over the 15 grid indices (`OpponentFilter`, log space), wrapped in `BeliefWrapper`, which adds `obs["belief"]`; policy input from `belief_obs_fn` (board, own omega, posterior). Hypotheses = train opponents (D1). Trained 5 seeds x 2M steps, tau 0.1. Evaluated through `evaluate_policy(..., env_wrapper=...)`, so it uses the same harness as MO-PPO.
 
 ## Baseline results (MO-PPO, tau = 0.1, 100 games per cell, greedy policy)
 
@@ -26,7 +27,16 @@ Test opponents `[9, 10, 11]`, all 15 own omegas, both sides, 5 training seeds. R
 | MO-PPO | +0.147 +- 0.013 | 0.366 +- 0.043 | 0.556 | 0.079 |
 | Random (1 seed) | -0.134 | 0.098 | 0.462 | 0.440 |
 
-Files (git-ignored): `results/mo_ppo/seed<N>/{policy.pt,train_log.csv}`, `results/mo_ppo/eval_test.csv`. Regenerate with the commands in the README ("Running experiments").
+Omega-hat agent on the same cells (5 seeds, same harness, `results/belief/eval_test.csv`):
+
+| Agent | Mean utility | Win rate | Draw rate | Loss rate |
+|---|---|---|---|---|
+| MO-PPO (re-run 2026-11-26) | +0.146 +- 0.014 | 0.355 +- 0.037 | 0.556 +- 0.031 | 0.089 +- 0.045 |
+| Omega-hat (belief), hypotheses = train opponents | +0.152 +- 0.013 | 0.376 +- 0.055 | 0.541 +- 0.043 | 0.083 +- 0.053 |
+
+The two agents are within each other's CI. The re-run of MO-PPO gives a slightly different win rate than the first table (0.355 vs 0.366); both are reported so the discrepancy is visible. Reason to expect no gain: the phase 0 check (TD-18) shows the filter's posterior barely moves toward the true group within one game, so the belief input carries little information. Also, test opponents are outside the hypothesis set (TD-19), so the filter cannot represent them.
+
+Files (git-ignored): `results/mo_ppo/seed<N>/{policy.pt,train_log.csv}`, `results/mo_ppo/eval_test.csv`, `results/belief/seed<N>/{policy.pt,train_log.csv}`, `results/belief/eval_test.csv`. Regenerate with the commands in the README ("Running experiments").
 
 Caveat: raw test utility (+0.147) vs train utility (+0.087) cannot be compared because the opponent sets differ in difficulty. Gain over the random agent is similar on both (+0.281 test, +0.267 train: random scores -0.134 and -0.180), so no sign of a generalization drop, but only regret against the exact best response (TD-01) settles it. Full reading of the results in `docs/mo_ppo_baseline.md`.
 

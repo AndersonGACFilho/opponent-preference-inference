@@ -14,7 +14,7 @@ Priority: **H** = blocks the short paper (due 2026-11-30), **M** = should be don
 | TD-02 | Opponents | P1 | H | Calibrate the softmax temperature `tau` (default in the env is a placeholder). |
 | TD-03 | Opponents | P2 / P1 / P4 | H | Confirm the train/test split rule (whole groups of identical deterministic policies stay on the same side; 15 omegas give only 12 distinct behaviours). `splits.py` is a proposal. |
 | TD-04 | Agents | P3 | H | Oracle agent (same policy architecture as the omega-hat agent, plus the true opponent omega as input). |
-| TD-05 | Agents | P4 | H | Omega-hat inference module (supervised network over the move history) and omega-hat agent; error-per-move metric. |
+| TD-05 | Agents | P4 | H | Omega-hat inference module and agent. Built: Bayesian filter over the grid indices (`inference.py`, `BeliefWrapper`, `belief_obs_fn`), agent trained for 5 seeds (`scripts/train_belief_agent.py`), evaluated with the shared harness (`evaluate_agent.py`). Still open: error-per-move metric (posterior mass on the true behaviour group), and the Phase 0 gate (TD-18). The design doc's first draft used a supervised network; the filter replaces it (see `docs/opponent_inference_design.md`). |
 | TD-06 | Experiments | P1 | H | 5 seeds x (own omega x test opponent omega) experiments, results table, figures (regret per omega, omega-hat error per move, regret map). |
 | TD-07 | Paper | P1–P4 | H | Write all sections; complete the references; add the Overleaf link to the README (#34). |
 | TD-08 | Validation | P4 | M | Confirm the framing with the professor. |
@@ -27,6 +27,8 @@ Priority: **H** = blocks the short paper (due 2026-11-30), **M** = should be don
 | TD-15 | Agents | P2 | M | MO-PPO keeps the paper's lr 0.01, which collapses policy entropy within ~40k steps. A single-seed diagnostic with lr 0.003 gave comparable test utility (+0.089 vs +0.105), so it was not changed; revisit if oracle/omega-hat agents behave differently. |
 | TD-16 | Evaluation | P2 / P1 | M | `evaluate_policy` plays the greedy (argmax) policy, 100 games per (own omega, opponent, side) cell, own omegas only on the 15-point grid. Decide whether the paper needs stochastic evaluation or off-grid omegas. |
 | TD-17 | Environment | P2 | L | `ConnectFourOpponentEnv` is hard-wired to the opponent assumption "same omega as the agent" through the Q tables; opponents that model the agent's true omega would need new tables. |
+| TD-18 | Inference | P4 / P1 | H | Phase 0 gate failed. Mass on the true behaviour group after 8 opponent moves is 0.07 to 0.28 (`results/phase0_identification.csv`, random agent, tau 0.1); pass rate (mass >= 0.9) is 0.00. Moves in one 4x4 game do not identify omega, and tau does not change that (tau 0 to 0.1, pass rate 0.00 to 0.04). Decide before the paper: change the observation or horizon, or report inference as not identified and rest the claim on the best-response gap. |
+| TD-19 | Inference | P4 | M | Headline belief agent uses the train opponents as hypotheses (design D1), so on the test split the true opponent is never in the filter's support. Run the full 15-point grid as the sensitivity run required by D1, and report both. |
 
 ## Resolved
 
