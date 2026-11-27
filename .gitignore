@@ -247,3 +247,5 @@ events.out.tfevents.*
 
 # Ferramentas
 .ruff_cache/
+CLAUDE.md
+graphify-out/
