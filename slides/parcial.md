@@ -96,7 +96,8 @@ $$
 P(k \mid h_t) \propto P(k)\prod_{\tau \le t} \pi_k(a^{opp}_\tau \mid s_\tau)
 $$
 
-**Para que serve:** estimar, a partir dos lances observados, qual dos 15 oponentes está jogando. **Como se comporta:** começa com a mesma probabilidade para todos e, a cada lance do oponente, multiplica o peso de cada hipótese pela probabilidade que aquele oponente daria ao lance observado; assim, as hipóteses que explicam os lances ganham peso e as demais perdem.
+**Para que serve:** estimar, a partir dos lances observados, qual dos 15 oponentes está jogando. 
+**Como se comporta:** começa com a mesma probabilidade para todos e, a cada lance do oponente, multiplica o peso de cada hipótese pela probabilidade que aquele oponente daria ao lance observado; assim, as hipóteses que explicam os lances ganham peso e as demais perdem.
 
 - Hipóteses: os 15 índices do grid (não grupos, porque com τ > 0 ω's do mesmo grupo diferem).
 - Atualização em log-espaço, a cada lance do oponente.
