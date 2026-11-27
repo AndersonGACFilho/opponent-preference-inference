@@ -53,14 +53,14 @@ melhor resposta exata ≥ oráculo ≥ agente ω̂ ≥ MO-PPO
 - **MO-Connect4 4×4**, três objetivos: vencer, vencer rápido, controle de colunas.
 - **Utilidade linear:** u = ω·R.
 - **Solver exato** por indução reversa: ~134k estados não terminais, resolvido em segundos.
-- **Oponentes:** política softmax(Q_k / τ) sobre 15 pontos do simplex (passo 0,25), com τ = 0,1 (placeholder, TD-02).
+- **Oponentes:** política softmax(Q_k / τ) sobre 15 pontos do simplex (passo 0,25), com τ = 0,1).
 - **Split por grupo de comportamento** (12 grupos): treino e teste nunca compartilham grupo.
 
 ---
 
 ## Baseline: MO-PPO
 
-- Política MLP ator-crítico com máscara de ações; entrada = tabuleiro + ω próprio.
+- Política MLP *actor-critic* com máscara de ações; entrada = tabuleiro + ω próprio.
 - Hiperparâmetros do Apêndice A do artigo base; 5 seeds × 2M passos.
 - Avaliação no **split de teste** (3 oponentes, 15 ω próprios, dois lados, 100 jogos por célula).
 
