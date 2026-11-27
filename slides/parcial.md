@@ -44,11 +44,8 @@ Contra oponentes com $\omega$ **não vistos no treino**, um agente que infere $\
 Ordem esperada:
 
 ```
-melhor resposta exata ≥ oráculo ≥ agente ω̂ ≥ MO-PPO
+melhor resposta exata ≥ oráculo ≥ agente $\hat{\omega}$ ≥ MO-PPO
 ```
-
-- Gap melhor resposta ↔ oráculo: custo da aproximação por RL.
-- Gap oráculo ↔ $\hat{\omega}$: custo de não conhecer ω do oponente.
 
 ---
 
@@ -90,31 +87,30 @@ IC 95% sobre 5 seeds.
 
 ---
 
-## Agente ω̂: filtro bayesiano
+## Agente $\hat{\omega}$: filtro bayesiano
 
 $$
 P(k \mid h_t) \propto P(k)\prod_{\tau \le t} \pi_k(a^{opp}_\tau \mid s_\tau)
 $$
 
-**Para que serve:** estimar, a partir dos lances observados, qual dos 15 oponentes está jogando. 
+Estima, a partir dos lances observados, qual dos 15 oponentes está jogando. 
+
 **Como se comporta:** começa com a mesma probabilidade para todos e, a cada lance do oponente, multiplica o peso de cada hipótese pela probabilidade que aquele oponente daria ao lance observado; assim, as hipóteses que explicam os lances ganham peso e as demais perdem.
 
 - Hipóteses: os 15 índices do grid (não grupos, porque com τ > 0 ω's do mesmo grupo diferem).
 - Atualização em log-espaço, a cada lance do oponente.
-- Entrada da política: tabuleiro + ω próprio + **posterior** sobre k.
-- Treino usa só os oponentes de treino (D1).
+- Entrada da política: tabuleiro + ω próprio + probabilidade de ser oponente **k**.
 
 ---
 
-## Resultado: agente ω̂ vs MO-PPO (teste)
+## Resultado: agente $\hat{\omega}$ vs MO-PPO (teste)
 
 | Agente | Utilidade média | Vitória | Empate | Derrota |
 |---|---|---|---|---|
 | MO-PPO | +0,146 ± 0,014 | 0,355 ± 0,037 | 0,556 ± 0,031 | 0,089 ± 0,045 |
-| ω̂ (hipóteses = treino) | +0,152 ± 0,013 | 0,376 ± 0,055 | 0,541 ± 0,043 | 0,083 ± 0,053 |
+| $\hat{\omega}$ | +0,152 ± 0,013 | 0,376 ± 0,055 | 0,541 ± 0,043 | 0,083 ± 0,053 |
 
-- As duas médias estão dentro do IC uma da outra: **sem ganho detectável** nesta versão.
-- H1 **não** está confirmada.
+- Hipótese **não** está confirmada.
 
 ---
 
@@ -130,7 +126,7 @@ $$
 
 Os dois agentes começam em cerca de −0,18 de utilidade média e chegam a cerca de +0,085 após 2 milhões de passos. As curvas se sobrepõem durante todo o treino, e a faixa entre os seeds é parecida nos dois casos.
 
-Ou seja, o agente ω̂ aprende no mesmo ritmo que o MO-PPO. A informação do filtro não acelera o treino nem muda o nível final, nos oponentes de treino.
+Ou seja, o agente $\hat{\omega}$ aprende no mesmo ritmo que o MO-PPO. A informação do filtro não acelera o treino nem muda o nível final, nos oponentes de treino.
 
 </div>
 </div>
@@ -145,7 +141,7 @@ Ou seja, o agente ω̂ aprende no mesmo ritmo que o MO-PPO. A informação do fi
 | 10 | (0; 1; 0) | apenas vencer rápido | 12 (distância 0,09) |
 | 11 | (0; 0,75; 0,25) | sobretudo vencer rápido | 12 (distância 0,05) |
 
-Os três são diferentes entre si. Os oponentes 10 e 11 são os mais parecidos (distância 0,05), porque ambos valorizam vencer rápido, e o 9 é o mais distante dos dois (distância 0,12). Cada um tem um vizinho de treino próximo, mas nenhum é idêntico a um oponente de treino.
+Os três são diferentes entre si. Os oponentes 10 e 11 são os mais parecidos (distância 0,05),já o 9 é o mais distante dos dois (distância 0,12).
 
 <p class="caption">Distância: variação total entre as políticas de lance dos dois oponentes (0 = iguais, 1 = totalmente diferentes), média sobre as posições do jogo, com τ = 0,1.</p>
 
@@ -172,9 +168,13 @@ Nenhuma dessas diferenças sai do intervalo de confiança de 95% sobre os 5 seed
 
 ## Por que o filtro não ajuda: teste de identificação (fase 0)
 
-Para saber se o problema estava nos lances, medimos o filtro sozinho. Um agente aleatório jogou 100 partidas contra cada um dos 15 oponentes, e registramos quanta probabilidade o filtro dava ao grupo verdadeiro depois de cada lance. Em média, essa probabilidade vai de 0,10 após o primeiro lance para 0,16 após o oitavo: o filtro aprende, mas muito devagar.
+Para saber se o problema estava nos lances, medimos o filtro sozinho. 
 
-O critério de aprovação era chegar a 0,9. Nenhum oponente chega perto: após oito lances, a probabilidade fica entre 0,08 e 0,28, e nenhuma partida passa do limiar com τ = 0,1. Em um tabuleiro 4×4, portanto, os lances do oponente não revelam a sua preferência, e trocar τ não muda isso.
+Um agente aleatório jogou 100 partidas contra cada um dos 15 oponentes, e registramos quanta probabilidade o filtro dava ao grupo verdadeiro depois de cada lance. 
+
+Em média, essa probabilidade vai de 0,10 após o primeiro lance para 0,16 após o oitavo: o filtro aprende, mas muito devagar.
+
+O critério de aprovação era chegar a 0,9, mas nenhum oponente chega perto: após oito lances, a probabilidade fica entre 0,08 e 0,28, e nenhuma partida passa do limiar com τ = 0,1. Em um tabuleiro 4×4, portanto, os lances do oponente não revelam a sua preferência, e trocar τ não muda isso.
 
 Isso explica o resultado do slide anterior. A crença que chega à política traz pouca informação, então o agente ω̂ se comporta quase como o MO-PPO.
 
@@ -182,9 +182,11 @@ Isso explica o resultado do slide anterior. A crença que chega à política tra
 
 ## Limitações
 
-O limite mais importante é que, no teste, o filtro conhece apenas os oponentes de treino. O oponente verdadeiro nunca faz parte das hipóteses (TD-19), então o agente ω̂ é avaliado com um modelo que não contém justamente o que deveria identificar. Uma versão com o grid completo ainda precisa ser rodada para comparar.
+A limitação mais importante é que, no teste, o filtro conhece apenas os oponentes de treino. 
 
-O modelo do oponente também tem limites. Sua tabela supõe que o oponente tem a mesma preferência que o agente, que é uma simplificação conhecida (TD-17). O parâmetro τ é um valor provisório (TD-02), e ainda não temos a melhor resposta exata, então não há medida de regret (TD-01).
+O oponente verdadeiro nunca faz parte das hipóteses, então o agente $\hat{\omega}$ é avaliado com um modelo que não contém justamente o que deveria identificar. 
+
+Uma versão com o grid completo ainda precisa ser rodada para comparar.
 
 Por fim, o MO-PPO apareceu com 0,366 de vitória na primeira rodada e com 0,355 na repetição. As duas estão registradas, e a diferença fica dentro do intervalo de confiança.
 
@@ -192,11 +194,11 @@ Por fim, o MO-PPO apareceu com 0,366 de vitória na primeira rodada e com 0,355 
 
 ## Próximos passos
 
-1. **Decidir o gate da fase 0** (TD-18): mudar a observação ou o horizonte, ou reportar que ω não é identificado em uma partida e apoiar a claim no gap até a melhor resposta.
-2. Rodar a sensibilidade com o grid completo como hipótese (D1, TD-19).
-3. Calibrar τ (TD-02) e implementar a melhor resposta exata com regret (TD-01).
-4. Agente oráculo (TD-04) e métrica de erro de ω̂ por lance (TD-05).
-5. Figuras, tabela final e texto do paper (TD-06, TD-07).
+1. **Decidir critério de início**: mudar a observação ou o horizonte, ou reportar que ω não é identificado em uma partida e apoiar a claim no gap até a melhor resposta.
+2. Rodar a sensibilidade com o grid completo como hipótese.
+3. Calibrar τ e implementar a melhor resposta exata com regret.
+4. Agente oráculo (TD-04) e métrica de erro de ω̂ por lance.
+5. Figuras, tabela final e texto do paper.
 
 ---
 
