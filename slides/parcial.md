@@ -117,6 +117,58 @@ $$
 
 ---
 
+## Curvas de treinamento
+
+<div class="two-col">
+<div>
+
+![](../partial_results/learning_curves.png)
+
+</div>
+<div>
+
+Os dois agentes começam em cerca de −0,18 de utilidade média e chegam a cerca de +0,085 após 2 milhões de passos. As curvas se sobrepõem durante todo o treino, e a faixa entre os seeds é parecida nos dois casos.
+
+Ou seja, o agente ω̂ aprende no mesmo ritmo que o MO-PPO. A informação do filtro não acelera o treino nem muda o nível final, nos oponentes de treino.
+
+</div>
+</div>
+
+---
+
+## Oponentes de teste: quem são
+
+| Oponente | ω (vencer; vencer rápido; colunas) | Perfil | Oponente de treino mais parecido |
+|---|---|---|---|
+| 9 | (0,25; 0; 0,75) | sobretudo controle de colunas | 8 (distância 0,03) |
+| 10 | (0; 1; 0) | apenas vencer rápido | 12 (distância 0,09) |
+| 11 | (0; 0,75; 0,25) | sobretudo vencer rápido | 12 (distância 0,05) |
+
+Os três são diferentes entre si. Os oponentes 10 e 11 são os mais parecidos (distância 0,05), porque ambos valorizam vencer rápido, e o 9 é o mais distante dos dois (distância 0,12). Cada um tem um vizinho de treino próximo, mas nenhum é idêntico a um oponente de treino.
+
+<p class="caption">Distância: variação total entre as políticas de lance dos dois oponentes (0 = iguais, 1 = totalmente diferentes), média sobre as posições do jogo, com τ = 0,1.</p>
+
+---
+
+## Desempenho por oponente de teste
+
+<div class="two-col">
+<div>
+
+![](../partial_results/test_utility_by_opponent.png)
+
+</div>
+<div>
+
+Contra o oponente 10, o agente ω̂ fica acima do MO-PPO (+0,012). Contra o 11, também (+0,010). Contra o 9, fica ligeiramente abaixo (−0,003).
+
+Nenhuma dessas diferenças sai do intervalo de confiança de 95% sobre os 5 seeds, então não há ganho consistente. O oponente 10 é o mais difícil para os dois agentes.
+
+</div>
+</div>
+
+---
+
 ## Por que o filtro não ajuda: teste de identificação (fase 0)
 
 Para saber se o problema estava nos lances, medimos o filtro sozinho. Um agente aleatório jogou 100 partidas contra cada um dos 15 oponentes, e registramos quanta probabilidade o filtro dava ao grupo verdadeiro depois de cada lance. Em média, essa probabilidade vai de 0,10 após o primeiro lance para 0,16 após o oitavo: o filtro aprende, mas muito devagar.
