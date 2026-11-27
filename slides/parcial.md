@@ -3,6 +3,7 @@ marp: true
 theme: default
 paginate: true
 math: katex
+html: true
 size: 16:9
 title: Inferência de preferências do oponente em MO-Connect4
 style: |
@@ -11,6 +12,9 @@ style: |
   h2 { color: #1f3a5f; }
   table { font-size: 22px; }
   code { font-size: 0.9em; }
+  .two-col { display: grid; grid-template-columns: 1.25fr 1fr; gap: 36px; align-items: center; font-size: 22px; }
+  .two-col img { width: 100%; }
+  .caption { font-size: 18px; color: #555; }
 ---
 
 <!-- _class: lead -->
@@ -35,7 +39,7 @@ Anderson Gonçalves, Diogo Rezende, Luiz Felipe e João Augusto · 27/11/2026
 
 ## Hipótese (H1)
 
-Contra oponentes com $$\omega$$ **não vistos no treino**, um agente que infere $$\hat{\omega}$$ tem utilidade maior do que o MO-PPO sem modelo de oponente.
+Contra oponentes com $\omega$ **não vistos no treino**, um agente que infere $\hat{\omega}$ tem utilidade maior do que o MO-PPO sem modelo de oponente.
 
 Ordem esperada:
 
@@ -44,17 +48,30 @@ melhor resposta exata ≥ oráculo ≥ agente ω̂ ≥ MO-PPO
 ```
 
 - Gap melhor resposta ↔ oráculo: custo da aproximação por RL.
-- Gap oráculo ↔ $$\hat{\omega}$$: custo de não conhecer ω do oponente.
+- Gap oráculo ↔ $\hat{\omega}$: custo de não conhecer ω do oponente.
 
 ---
 
-## Ambiente e solver
+## Ambiente, preferências e oponentes
 
-- **MO-Connect4 4×4**, três objetivos: vencer, vencer rápido, controle de colunas.
-- **Utilidade linear:** u = ω·R.
-- **Solver exato** por indução reversa: ~134k estados não terminais, resolvido em segundos.
-- **Oponentes:** política softmax(Q_k / τ) sobre 15 pontos do simplex (passo 0,25), com τ = 0,1).
-- **Split por grupo de comportamento** (12 grupos): treino e teste nunca compartilham grupo.
+<div class="two-col">
+<div>
+
+No MO-Connect4, dois jogadores alternam peças em um tabuleiro 4×4 e tentam fazer quatro em linha. Cada jogador avalia o resultado por três objetivos: vencer, vencer rápido e controlar colunas.
+
+A preferência de um jogador é um vetor ω = (ω₁, ω₂, ω₃) de pesos não negativos que somam 1. Os vetores possíveis formam um triângulo, o **simplex**, cujos vértices são os objetivos puros: (1, 0, 0), (0, 1, 0) e (0, 0, 1).
+
+Usamos 15 pontos desse triângulo, espaçados de 0,25. Cada ponto define um oponente, que joga segundo a política $\mathrm{softmax}(Q_k / \tau)$, calculada de forma exata. Com τ = 0,1, ele quase sempre escolhe o melhor lance, mas comete erros ocasionais.
+
+</div>
+<div>
+
+![](assets/moconnect4.gif)
+
+<p class="caption">Animação do ambiente MO-Connect4, da documentação do MOMAland (momaland.farama.org).</p>
+
+</div>
+</div>
 
 ---
 
@@ -79,6 +96,8 @@ $$
 P(k \mid h_t) \propto P(k)\prod_{\tau \le t} \pi_k(a^{opp}_\tau \mid s_\tau)
 $$
 
+**Para que serve:** estimar, a partir dos lances observados, qual dos 15 oponentes está jogando. **Como se comporta:** começa com a mesma probabilidade para todos e, a cada lance do oponente, multiplica o peso de cada hipótese pela probabilidade que aquele oponente daria ao lance observado; assim, as hipóteses que explicam os lances ganham peso e as demais perdem.
+
 - Hipóteses: os 15 índices do grid (não grupos, porque com τ > 0 ω's do mesmo grupo diferem).
 - Atualização em log-espaço, a cada lance do oponente.
 - Entrada da política: tabuleiro + ω próprio + **posterior** sobre k.
@@ -98,23 +117,23 @@ $$
 
 ---
 
-## Por que não há ganho: teste de identificação (fase 0)
+## Por que o filtro não ajuda: teste de identificação (fase 0)
 
-- Medido com política aleatória, 100 jogos por oponente, 8 lances.
-- Massa posterior no grupo verdadeiro após 8 lances: **0,07 a 0,28**.
-- Taxa de passagem (massa ≥ 0,9): **0,00** para τ = 0,1; até 0,04 para τ = 0.
-- Em um jogo 4×4, os lances do oponente **não identificam ω**. Trocar τ não resolve.
+Para saber se o problema estava nos lances, medimos o filtro sozinho. Um agente aleatório jogou 100 partidas contra cada um dos 15 oponentes, e registramos quanta probabilidade o filtro dava ao grupo verdadeiro depois de cada lance. Em média, essa probabilidade vai de 0,10 após o primeiro lance para 0,16 após o oitavo: o filtro aprende, mas muito devagar.
 
-Consequência: o agente recebe pouca informação útil no vetor de crença.
+O critério de aprovação era chegar a 0,9. Nenhum oponente chega perto: após oito lances, a probabilidade fica entre 0,08 e 0,28, e nenhuma partida passa do limiar com τ = 0,1. Em um tabuleiro 4×4, portanto, os lances do oponente não revelam a sua preferência, e trocar τ não muda isso.
+
+Isso explica o resultado do slide anterior. A crença que chega à política traz pouca informação, então o agente ω̂ se comporta quase como o MO-PPO.
 
 ---
 
 ## Limitações
 
-- **Filtro mal especificado no teste:** as hipóteses são só os oponentes de treino (TD-19), então o verdadeiro oponente nunca está no suporte do filtro.
-- **Modelo do oponente:** a tabela é `solve_spe(ω, ω)`, que ignora o ω do agente (TD-17).
-- **τ placeholder** (TD-02); sem métrica de regret ainda (TD-01).
-- **Uma versão do baseline:** o MO-PPO re-rodado dá vitória 0,355, contra 0,366 na primeira tabela; as duas estão registradas.
+O limite mais importante é que, no teste, o filtro conhece apenas os oponentes de treino. O oponente verdadeiro nunca faz parte das hipóteses (TD-19), então o agente ω̂ é avaliado com um modelo que não contém justamente o que deveria identificar. Uma versão com o grid completo ainda precisa ser rodada para comparar.
+
+O modelo do oponente também tem limites. Sua tabela supõe que o oponente tem a mesma preferência que o agente, que é uma simplificação conhecida (TD-17). O parâmetro τ é um valor provisório (TD-02), e ainda não temos a melhor resposta exata, então não há medida de regret (TD-01).
+
+Por fim, o MO-PPO apareceu com 0,366 de vitória na primeira rodada e com 0,355 na repetição. As duas estão registradas, e a diferença fica dentro do intervalo de confiança.
 
 ---
 
