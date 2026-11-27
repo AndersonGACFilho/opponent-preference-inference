@@ -4,7 +4,7 @@
 
 ## O que mostra
 
-Três mapas de calor com a mesma grade: linhas são os 15 valores do ω próprio do agente (ω = (win, win rápido, controle de colunas)), colunas são os 3 oponentes de teste.
+Três mapas de calor com a mesma grade: linhas são os 15 valores do ω próprio do agente (ω = (vencer, vencer rápido, controle de colunas)), colunas são os 3 oponentes de teste, com o ω de cada um embaixo do nome. O perfil de cada oponente está em [test_opponents.md](test_opponents.md).
 
 1. **MO-PPO:** utilidade média em cada célula.
 2. **ω̂ agente:** utilidade média em cada célula.

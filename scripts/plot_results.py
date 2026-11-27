@@ -26,6 +26,16 @@ COLORS = {"mo_ppo": "#7f8c8d", "belief": "#1f77b4"}
 OUTCOMES = ("win_rate", "draw_rate", "loss_rate")
 
 
+def omega_text(w: np.ndarray) -> str:
+    """Omega as '(0,25; 0,00; 0,75)' with decimal commas, for axis labels."""
+    return "(" + "; ".join(f"{x:.2f}".replace(".", ",") for x in w) + ")"
+
+
+def omega_compact(w: np.ndarray) -> str:
+    """Omega as '(0,25;0;0,75)', short enough to fit under narrow heatmap columns."""
+    return "(" + ";".join(f"{x:g}".replace(".", ",") for x in w) + ")"
+
+
 def learning_curves(results: Path, out: Path, window: int = 20) -> None:
     """Mean utility during training, averaged over seeds (band = min/max over seeds)."""
     fig, ax = plt.subplots(figsize=(7, 4.2))
@@ -50,7 +60,7 @@ def learning_curves(results: Path, out: Path, window: int = 20) -> None:
     plt.close(fig)
 
 
-def test_utility_by_opponent(df: pd.DataFrame, out: Path) -> None:
+def test_utility_by_opponent(df: pd.DataFrame, weights: np.ndarray, out: Path) -> None:
     """Mean utility on each test opponent with 95% CI over seeds."""
     stats = summarize(df, by=["agent", "opponent_id"])
     opponents = sorted(stats["opponent_id"].unique())
@@ -62,7 +72,7 @@ def test_utility_by_opponent(df: pd.DataFrame, out: Path) -> None:
         ax.bar(x, sub["mean_utility_mean"], width, yerr=sub["mean_utility_ci95"], capsize=4,
                color=COLORS[agent], label=AGENTS[agent])
     ax.set_xticks(np.arange(len(opponents)))
-    ax.set_xticklabels([f"oponente {k}" for k in opponents])
+    ax.set_xticklabels([f"oponente {k}\nω = {omega_text(weights[k])}" for k in opponents])
     ax.axhline(0, color="black", lw=0.8)
     ax.set_ylabel("utilidade média (ω·R)")
     ax.set_title("Utilidade no teste por oponente (IC 95% sobre seeds)")
@@ -112,7 +122,8 @@ def utility_heatmaps(df: pd.DataFrame, weights: np.ndarray, out: Path) -> None:
         im = ax.imshow(grid.values, cmap=cmap, vmin=lo, vmax=hi, aspect="auto")
         ax.set_title(title)
         ax.set_xticks(range(len(opponents)))
-        ax.set_xticklabels([f"opp {k}" for k in opponents])
+        ax.set_xticklabels([f"opp {k}\n{omega_compact(weights[k])}" for k in opponents],
+                           fontsize=7)
         ax.set_yticks(range(len(labels)))
         ax.set_yticklabels(labels if ax is axes[0] else [""] * len(labels), fontsize=8)
         ax.set_xlabel("oponente de teste")
@@ -163,7 +174,7 @@ def main() -> None:
     eval_df = eval_df[eval_df["agent"].isin(AGENTS)]
 
     learning_curves(args.results, out_dir / "learning_curves.png")
-    test_utility_by_opponent(eval_df, out_dir / "test_utility_by_opponent.png")
+    test_utility_by_opponent(eval_df, tables.weights, out_dir / "test_utility_by_opponent.png")
     outcome_rates(eval_df, out_dir / "test_outcome_rates.png")
     utility_heatmaps(eval_df, tables.weights, out_dir / "utility_heatmaps.png")
     inference_quality(args.results / "phase0_identification.csv",

@@ -14,11 +14,13 @@ Utilidade média (ω·R) do MO-PPO (cinza) e do agente ω̂ (azul) contra cada u
 
 ## Valores
 
-| Oponente | MO-PPO | ω̂ agente | Diferença (ω̂ − MO-PPO) |
-|---|---|---|---|
-| 9 | 0,153 ± 0,027 | 0,150 ± 0,030 | −0,003 |
-| 10 | 0,130 ± 0,010 | 0,141 ± 0,021 | +0,012 |
-| 11 | 0,156 ± 0,014 | 0,166 ± 0,020 | +0,010 |
+| Oponente | ω (vencer; vencer rápido; colunas) | MO-PPO | ω̂ agente | Diferença (ω̂ − MO-PPO) |
+|---|---|---|---|---|
+| 9 | (0,25; 0; 0,75) | 0,153 ± 0,027 | 0,150 ± 0,030 | −0,003 |
+| 10 | (0; 1; 0) | 0,130 ± 0,010 | 0,141 ± 0,021 | +0,012 |
+| 11 | (0; 0,75; 0,25) | 0,156 ± 0,014 | 0,166 ± 0,020 | +0,010 |
+
+Quem são esses oponentes, e por que eles diferem, está em [test_opponents.md](test_opponents.md).
 
 Média geral no teste: MO-PPO +0,146 ± 0,014; ω̂ +0,152 ± 0,013.
 
