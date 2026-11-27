@@ -42,10 +42,8 @@ Anderson Gonçalves, Diogo Rezende, Luiz Felipe e João Augusto · 27/11/2026
 Contra oponentes com $\omega$ **não vistos no treino**, um agente que infere $\hat{\omega}$ tem utilidade maior do que o MO-PPO sem modelo de oponente.
 
 Ordem esperada:
+- melhor resposta exata ≥ oráculo ≥ agente $\hat{\omega}$ ≥ MO-PPO
 
-```
-melhor resposta exata ≥ oráculo ≥ agente $\hat{\omega}$ ≥ MO-PPO
-```
 
 ---
 
@@ -90,7 +88,7 @@ IC 95% sobre 5 seeds.
 ## Agente $\hat{\omega}$: filtro bayesiano
 
 $$
-P(k \mid h_t) \propto P(k)\prod_{\tau \le t} \pi_k(a^{opp}_\tau \mid s_\tau)
+P(k \mid h_t) \propto P(k)\prod_{i \le t} \mathrm{softmax}!\left(Q_k(s_i, \cdot)/\tau\right)_{a^{opp}_i}
 $$
 
 Estima, a partir dos lances observados, qual dos 15 oponentes está jogando. 
@@ -194,7 +192,7 @@ Por fim, o MO-PPO apareceu com 0,366 de vitória na primeira rodada e com 0,355 
 
 ## Próximos passos
 
-1. **Decidir critério de início**: mudar a observação ou o horizonte, ou reportar que ω não é identificado em uma partida e apoiar a claim no gap até a melhor resposta.
+1. Mudar a observação ou o horizonte.
 2. Rodar a sensibilidade com o grid completo como hipótese.
 3. Calibrar τ e implementar a melhor resposta exata com regret.
 4. Agente oráculo (TD-04) e métrica de erro de ω̂ por lance.
