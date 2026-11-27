@@ -88,7 +88,7 @@ IC 95% sobre 5 seeds.
 ## Agente $\hat{\omega}$: filtro bayesiano
 
 $$
-P(k \mid h_t) \propto P(k)\prod_{i \le t} \mathrm{softmax}!\left(Q_k(s_i, \cdot)/\tau\right)_{a^{opp}_i}
+P(k \mid h_t) \propto P(k)\prod_{i \le t} \mathrm{softmax}\!\left(Q_k(s_i, \cdot)/\tau\right)_{a^{opp}_i}
 $$
 
 Estima, a partir dos lances observados, qual dos 15 oponentes está jogando. 
