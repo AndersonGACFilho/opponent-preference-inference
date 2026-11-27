@@ -5,7 +5,13 @@ import pytest
 
 from opponent_inference.env import ConnectFourOpponentEnv
 from opponent_inference.inference import BeliefWrapper, OpponentFilter, belief_obs_fn
-from opponent_inference.solver import empty_board, legal_moves, load_q_tables, play, terminal_outcome
+from opponent_inference.solver import (
+    empty_board,
+    legal_moves,
+    load_q_tables,
+    play,
+    terminal_outcome,
+)
 from opponent_inference.splits import behaviour_groups
 
 TABLES = Path(__file__).resolve().parents[1] / "data" / "q_tables_4x4.npz"

@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 from opponent_inference.evaluate import evaluate_policy, random_policy, summarize
+from opponent_inference.inference import BeliefWrapper
 from opponent_inference.solver import load_q_tables
 
 TABLES = Path(__file__).resolve().parents[1] / "data" / "q_tables_4x4.npz"
@@ -28,6 +29,34 @@ def test_evaluate_policy_is_deterministic_given_seeds(tables):
         return evaluate_policy(random_policy(3), tables, [2], [7], n_games=20, tau=0.3, seed=4)
 
     pd.testing.assert_frame_equal(run(), run())
+
+
+def test_env_wrapper_adds_belief_to_policy_observation(tables):
+    # One hypothesis (k) puts all posterior mass on k, so every belief vector is one-hot on k.
+    k = 5
+    seen = []
+
+    def policy(obs):
+        seen.append(np.asarray(obs["belief"]).copy())
+        return int(np.flatnonzero(obs["action_mask"])[0])
+
+    def wrap(env):
+        return BeliefWrapper(env, tables, [k], tau=0.5)
+
+    df = evaluate_policy(policy, tables, [k], [0], n_games=2, tau=0.5, seed=0, env_wrapper=wrap)
+    assert len(df) == 2  # one opponent x one own omega x two sides
+    assert len(seen) > 0
+    for belief in seen:
+        assert belief[k] == pytest.approx(1.0)
+        assert belief.sum() == pytest.approx(1.0)
+
+
+def test_without_env_wrapper_policy_sees_no_belief(tables):
+    def policy(obs):
+        assert "belief" not in obs
+        return int(np.flatnonzero(obs["action_mask"])[0])
+
+    evaluate_policy(policy, tables, [5], [0], n_games=1, tau=0.5, seed=0)
 
 
 def test_utility_matches_omega_dot_outcome_for_pure_win_omega(tables):

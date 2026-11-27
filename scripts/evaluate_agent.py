@@ -6,6 +6,7 @@ Examples:
 Writes a per-cell CSV (own omega x opponent x side x seed) and prints a summary over seeds.
 """
 import argparse
+from functools import partial
 from pathlib import Path
 
 import pandas as pd
@@ -13,6 +14,7 @@ import torch
 
 from opponent_inference.agents.policy import PolicyAgent, load_policy
 from opponent_inference.evaluate import evaluate_policy, random_policy, summarize
+from opponent_inference.inference import BeliefWrapper, belief_obs_fn
 from opponent_inference.solver import load_q_tables
 from opponent_inference.splits import train_test_split
 
@@ -41,11 +43,22 @@ def main() -> None:
     frames = []
     for path in args.checkpoints:
         ckpt = torch.load(path, map_location="cpu", weights_only=True)
-        seed = int(ckpt["extra"].get("seed", 0))
-        agent = PolicyAgent(load_policy(path))
-        df = evaluate_policy(agent, tables, opponent_ids, own_omega_ids, args.games, args.tau, seed)
-        frames.append(df.assign(agent="mo_ppo", seed=seed))
-        print(f"evaluated {path} (seed {seed})", flush=True)
+        extra = ckpt["extra"]
+        seed = int(extra.get("seed", 0))
+        if extra.get("agent") == "belief":  # omega-hat agent: policy input includes the belief
+            name = "belief"
+            agent = PolicyAgent(load_policy(path), obs_fn=belief_obs_fn)
+            hypotheses = extra["hypothesis_ids"]
+            env_wrapper = partial(BeliefWrapper, tables=tables, hypothesis_ids=hypotheses,
+                                  tau=args.tau)
+        else:
+            name = "mo_ppo"
+            agent = PolicyAgent(load_policy(path))
+            env_wrapper = None
+        df = evaluate_policy(agent, tables, opponent_ids, own_omega_ids, args.games, args.tau,
+                             seed, env_wrapper=env_wrapper)
+        frames.append(df.assign(agent=name, seed=seed))
+        print(f"evaluated {path} ({name}, seed {seed})", flush=True)
     if args.random:
         df = evaluate_policy(random_policy(0), tables, opponent_ids, own_omega_ids,
                              args.games, args.tau, seed=0)

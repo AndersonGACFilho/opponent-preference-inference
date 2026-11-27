@@ -10,8 +10,9 @@ best-response module (TECH_DEBT.md, TD-01). When it exists, merge its values by
 """
 from __future__ import annotations
 
-from typing import Callable, Dict, Iterable, Sequence
+from typing import Callable, Dict, Iterable, Optional, Sequence
 
+import gymnasium as gym
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -20,6 +21,7 @@ from .env import ConnectFourOpponentEnv
 from .solver import QTables
 
 PolicyFn = Callable[[Dict[str, np.ndarray]], int]
+EnvWrapper = Callable[[ConnectFourOpponentEnv], gym.Env]
 SIDES = ("X", "O")
 METRICS = ("mean_utility", "win_rate", "draw_rate", "loss_rate")
 
@@ -43,22 +45,26 @@ def evaluate_policy(
     tau: float,
     seed: int = 0,
     expose_opponent_omega: bool = False,
+    env_wrapper: Optional[EnvWrapper] = None,
 ) -> pd.DataFrame:
     """Play `n_games` per (own omega, opponent, side) cell; one DataFrame row per cell.
 
     `own_omega_ids` and `opponent_ids` index the omega grid of `tables`. Ties and draws count
     as draws (win_rate + draw_rate + loss_rate = 1). `mean_utility` is `omega . R` of the
-    agent's own omega, averaged over the games.
+    agent's own omega, averaged over the games. `env_wrapper` (e.g. `BeliefWrapper`) is applied
+    to each cell's environment, so the policy sees whatever observation the wrapper adds.
     """
     rows = []
     for j in own_omega_ids:
         for k in opponent_ids:
             for side_idx, side in enumerate(SIDES):
                 cell_seed = int(np.random.SeedSequence([seed, j, k, side_idx]).generate_state(1)[0])
-                env = ConnectFourOpponentEnv(
+                env: gym.Env = ConnectFourOpponentEnv(
                     tables, [k], own_omega=tables.weights[j], tau=tau, agent_side=side,
                     expose_opponent_omega=expose_opponent_omega,
                 )
+                if env_wrapper is not None:
+                    env = env_wrapper(env)
                 utilities, wins, losses = [], 0, 0
                 for game in range(n_games):
                     obs, _ = env.reset(seed=cell_seed if game == 0 else None)
